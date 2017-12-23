@@ -21,6 +21,7 @@ import Calendar from 'views/Calendar/Calendar.jsx';
 import UserPage from 'views/Pages/UserPage.jsx';
 import Insert from 'views/Stocks/Insert.jsx';
 import NewSale from 'views/Sales/NewSale.jsx';
+import Check from 'views/Stocks/Check.jsx';
 
 import pagesRoutes from './pages.jsx';
 
@@ -30,7 +31,8 @@ var dashRoutes = [
     { path: "/dashboard", name: "Dashboard", icon: "pe-7s-graph", component: Dashboard },
     {
         collapse: true, path: "/stocks", name: "Stocks", state: "openStocks", icon: "pe-7s-plugin", views: [
-            { path: "/stocks/insert", name: "Insert Stocks", mini: "I", component: Insert }]
+            { path: "/stocks/insert", name: "Insert Stocks", mini: "I", component: Insert },
+            { path: "/stocks/check", name: "Check Stocks", mini: "C", component: Check}]
     },
     {
         collapse: true, path: "/sales", name: "Sales", state: "openSales", icon: "pe-7s-gift", views:
