@@ -22,6 +22,7 @@ class Table extends Component {
     constructor(props, state) {
         super(props);
         this.state = {
+            title: this.props.title,
             dataTable: {
                 headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "MinQtt", "Qtt"],
                 dataRows: this.props.content.dataRows
@@ -49,7 +50,7 @@ class Table extends Component {
     }
     render() {
         return <Card
-            title="DataTables.net"
+            title={this.state.title}
             content={
                 <div className="fresh-datatables">
                     <table id="datatables" ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>

@@ -22,8 +22,12 @@ import UserPage from 'views/Pages/UserPage.jsx';
 import Insert from 'views/Stocks/Insert.jsx';
 import NewSale from 'views/Sales/NewSale.jsx';
 import Check from 'views/Stocks/Check.jsx';
+import ConsultStocks from 'views/Stocks/Consult';
+import ConsultSales from 'views/Sales/Consult';
+import ConsultOrders from 'views/Orders/Consult';
 
 import pagesRoutes from './pages.jsx';
+
 
 var pages = [{ path: "/pages/user-page", name: "User Page", mini: "UP", component: UserPage }].concat(pagesRoutes);
 
@@ -32,11 +36,17 @@ var dashRoutes = [
     {
         collapse: true, path: "/stocks", name: "Stocks", state: "openStocks", icon: "pe-7s-plugin", views: [
             { path: "/stocks/insert", name: "Insert Stocks", mini: "I", component: Insert },
-            { path: "/stocks/check", name: "Check Stocks", mini: "C", component: Check}]
+            { path: "/stocks/check", name: "Check Stocks", mini: "C", component: Check },
+            { path: "/stocks/consult", name: "Consult Logs", mini: "CL", component: ConsultStocks }]
     },
     {
         collapse: true, path: "/sales", name: "Sales", state: "openSales", icon: "pe-7s-gift", views:
-            [{ path: "/sales/new", name: "New Sale", mini: "NS", component: NewSale }]
+            [{ path: "/sales/new", name: "New Sale", mini: "NS", component: NewSale },
+            { path: "/sales/consult", name: "Consult Logs", mini: "CL", component: ConsultSales }]
+    },
+    {
+        collapse: true, path: "/orders", name: "Orders", state: "openOrders", icon: "pe-7s-plugin", views: [
+            { path: "/orders/consult", name: "Consult logs", mini: "CL", component: ConsultOrders }]
     },
     {
         collapse: true, path: "/pages", name: "Pages", state: "openPages", icon: "pe-7s-gift", views:

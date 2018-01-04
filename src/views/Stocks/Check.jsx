@@ -178,7 +178,7 @@ class Insert extends Component {
     render() {
         var table = null;
         if(this.state.dataTable.dataRows.length!==0){
-            table = <Table content={this.state.dataTable}/>
+            table = <Table title="Stocks" content={this.state.dataTable}/>
             console.log("Table",table);
         }else{
             table = null;

@@ -13,8 +13,16 @@ class Insert extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            presentationsDisabled: true,
+            medicinesDisabled: true,
             pharmacies: [],
-            singleSelect: null
+            presentations: [],
+            medicines: [],
+            singleSelect: null,
+            selectedPresentation: null,
+            selectedMedicine: null,
+            lastSelected: null,
+            lastPresentation: null
         }
     }
 
@@ -36,9 +44,55 @@ class Insert extends Component {
 
                 this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
+            });
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation')
+            .then(results => {
+                return results.json();
             })
+            .then(data => {
+                try {
+                    let presentations = data.map((presentation) => {
+                        return {
+                            value: presentation.id,
+                            label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
+                        }
+                    })
+                    console.log("Presentations", presentations);
+                    this.setState({ presentations: presentations });
+                } catch (err) {
+                    console.log("Error getting presentations");
+                }
+            });
     }
+    componentDidUpdate() {
+        if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
+            if (this.setState.presentationsDisabled !== false)
+                this.setState({ lastSelected: this.state.singleSelect, presentationsDisabled: false });
+        }
+        if (this.state.selectedPresentation !== null && this.state.lastPresentation !== this.state.selectedPresentation) {
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value)
+                .then(results => {
+                    return results.json();
+                })
+                .then(data => {
+                    try {
+                        console.log("Medicine", this.state.selectedPresentation);
+                        console.log("Data", data);
+                        let med = data.medicines.map((medicine) => {
+                            return {
+                                value: medicine.id,
+                                label: medicine.name
+                            };
+                        });
 
+                        console.log("Medicines", med);
+                        this.setState({ lastPresentation: this.state.selectedPresentation, medicines: med, medicinesDisabled: false });
+                    } catch (err) {
+                        console.log("Error getting medicines", err);
+                    }
+                });
+        }
+    }
     render() {
         if (this.state.pharmacies.length === 0) {
             return null;
@@ -72,11 +126,33 @@ class Insert extends Component {
                                         <fieldset>
                                             <FormGroup>
                                                 <ControlLabel className="col-sm-2">
-                                                    Presentation ID
+                                                    Presentation
                                                 </ControlLabel>
                                                 <Col sm={4}>
-                                                    <FormControl
-                                                        type="text"
+                                                    <Select
+                                                        placeholder="Select Drug"
+                                                        name="singleSelect2"
+                                                        value={this.state.selectedPresentation}
+                                                        options={this.state.presentations}
+                                                        onChange={(value) => this.setState({ selectedPresentation: value })}
+                                                        disabled={this.state.presentationsDisabled}
+                                                    />
+                                                </Col>
+                                            </FormGroup>
+                                        </fieldset>
+                                        <fieldset>
+                                            <FormGroup>
+                                                <ControlLabel className="col-sm-2">
+                                                    Medicine
+                                                </ControlLabel>
+                                                <Col sm={4}>
+                                                    <Select
+                                                        placeholder="Select Medicine"
+                                                        name="singleSelect2"
+                                                        value={this.state.selectedMedicine}
+                                                        options={this.state.medicines}
+                                                        onChange={(value) => this.setState({ selectedMedicine: value })}
+                                                        disabled={this.state.medicinesDisabled}
                                                     />
                                                 </Col>
                                             </FormGroup>
