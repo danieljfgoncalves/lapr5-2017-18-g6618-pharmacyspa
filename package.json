@@ -33,7 +33,9 @@
         "react-stepzilla": "^4.6.3",
         "react-syntax-highlighter": "^5.7.0",
         "react-tagsinput": "^3.18.0",
+        "react-three-renderer": "^3.2.3",
         "source-map": "^0.6.1",
+        "three": "^0.89.0",
         "wnumb": "^1.1.0"
     },
     "scripts": {
