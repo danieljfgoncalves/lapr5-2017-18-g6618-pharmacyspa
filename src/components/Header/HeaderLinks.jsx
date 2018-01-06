@@ -17,7 +17,10 @@ class HeaderLinks extends Component {
                     </FormGroup>
         </Navbar.Form>*/}
                 <Nav pullRight>
-                    <NavItem eventKey={3} href="#">
+                <NavItem eventKey={3} href="#/pages/login-page">
+                <div className="text-danger"><i className="pe-7s-close-circle"></i> Log in</div>
+                    </NavItem>
+                    {/*<NavItem eventKey={3} href="#">
                         <i className="fa fa-line-chart"></i>
                         <p>Stats</p>
                     </NavItem>
@@ -74,7 +77,7 @@ class HeaderLinks extends Component {
                         <MenuItem divider />
                         <MenuItem eventKey={4.4}><i className="pe-7s-lock"></i> Lock Screen</MenuItem>
                         <MenuItem eventKey={4.5}><div className="text-danger"><i className="pe-7s-close-circle"></i> Log out</div></MenuItem>
-                    </NavDropdown>
+                    </NavDropdown>*/}
                 </Nav>
             </div>
         );
