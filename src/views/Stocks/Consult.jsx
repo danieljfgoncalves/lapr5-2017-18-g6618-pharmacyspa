@@ -13,7 +13,7 @@ import Card from 'components/Card/Card.jsx';
 import Table from 'components/Table/Table.jsx';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
-
+var config = require("../../config.js");
 
 class Consult extends Component {
     constructor(props) {
@@ -36,8 +36,8 @@ class Consult extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem("token"),
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
             },
         })
             .then(results => {
@@ -59,14 +59,14 @@ class Consult extends Component {
 
     componentDidUpdate() {
         if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value + "/restock", {
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value, {
                 method: 'GET',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     Authorization: localStorage.getItem("token"),
-                    client_id: process.env.CLIENT_ID,
-                    client_secret: process.env.CLIENT_SECRET
+                    client_id: config.CLIENT_ID,
+                    client_secret: config.CLIENT_SECRET
                 },
             })
                 .then(results => {

@@ -14,6 +14,8 @@ import Table from 'components/Table/Table.jsx';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
+var config = require("../../config.js");
+
 class Insert extends Component {
     constructor(props) {
         super(props);
@@ -35,8 +37,8 @@ class Insert extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem("token"),
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
             },
         })
             .then(results => {
@@ -66,8 +68,8 @@ class Insert extends Component {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     Authorization: localStorage.getItem("token"),
-                    client_id: process.env.CLIENT_ID,
-                    client_secret: process.env.CLIENT_SECRET
+                    client_id: config.CLIENT_ID,
+                    client_secret: config.CLIENT_SECRET
                 },
             })
                 .then(results => {

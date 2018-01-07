@@ -6,8 +6,9 @@ import {
 
 import Card from 'components/Card/Card.jsx';
 import Select from 'react-select';
+import Button from 'elements/CustomButton/CustomButton.jsx';
 import 'react-select/dist/react-select.css';
-
+var config = require("../../config.js")
 
 class Insert extends Component {
     constructor(props) {
@@ -26,17 +27,56 @@ class Insert extends Component {
         }
     }
 
-
+    handleSubmit(event) {
+        event.preventDefault();
+        console.log(event);
+        if (this.state.singleSelect == null || this.state.selectedPresentation == null || this.state.selectedMedicine == null || this.qtd == null) {
+            alert("BAD INFO");
+        } else {
+            //todo validate qtd
+            //console.log("Selected Presentation", this.state.selectedPresentation);
+            //console.log("Selected Medicine", this.state.selectedMedicine);
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/restock', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem("token"),
+                    client_id: config.CLIENT_ID,
+                    client_secret: config.CLIENT_SECRET
+                },
+                body: JSON.stringify({
+                    id_pharmacy: this.state.singleSelect.value,
+                    quantity: this.qtd.value,
+                    medicinePresentation: {
+                        id_medicine: this.state.selectedMedicine.value,
+                        id_presentation: this.state.selectedPresentation.value
+                    }
+                }),
+            }).then(results => {
+                return results.json();
+            }).then(data => {
+                try {
+                    if (data.message == "Restock Created") {
+                        alert("Successfull!");
+                    }
+                } catch (err) {
+                    console.log("Error getting medicines", err);
+                }
+            });
+        }
+    }
 
     componentWillMount() {
+
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem("token"),
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
             },
         })
             .then(results => {
@@ -60,26 +100,23 @@ class Insert extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
                 Authorization: localStorage.getItem("token"),
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
             },
         })
             .then(results => {
                 return results.json();
             })
             .then(data => {
-                try {
-                    let presentations = data.map((presentation) => {
-                        return {
-                            value: presentation.id,
-                            label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
-                        }
-                    })
-                    console.log("Presentations", presentations);
-                    this.setState({ presentations: presentations });
-                } catch (err) {
-                    console.log("Error getting presentations");
-                }
+                console.log("PRESENTATIONS", data);
+                let presentations = data.map((presentation) => {
+                    return {
+                        value: presentation.id,
+                        label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
+                    }
+                })
+                console.log("Presentations", presentations);
+                this.setState({ presentations: presentations });
             });
     }
     componentDidUpdate() {
@@ -94,8 +131,8 @@ class Insert extends Component {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     Authorization: localStorage.getItem("token"),
-                    client_id: process.env.CLIENT_ID,
-                    client_secret: process.env.CLIENT_SECRET
+                    client_id: config.CLIENT_ID,
+                    client_secret: config.CLIENT_SECRET
                 },
             })
                 .then(results => {
@@ -130,10 +167,10 @@ class Insert extends Component {
                 <Grid fluid>
                     <Row>
                         <Col md={12}>
-                            <Card
-                                title={<legend>Insert Stocks Form</legend>}
-                                content={
-                                    <Form horizontal>
+                            <Form horizontal onSubmit={this.handleSubmit.bind(this)}>
+                                <Card
+                                    title={<legend>Insert Stocks Form</legend>}
+                                    content={<div>
                                         <fieldset>
                                             <FormGroup>
                                                 <ControlLabel className="col-sm-2">
@@ -193,13 +230,20 @@ class Insert extends Component {
                                                     <FormControl
                                                         placeholder="1"
                                                         type="text"
+                                                        inputRef={(qtd) => this.qtd = qtd}
                                                     />
                                                 </Col>
                                             </FormGroup>
                                         </fieldset>
-                                    </Form>
-                                }
-                            />
+                                    </div>}
+                                    legend={
+                                        <Button type="submit" bsStyle="info" fill wd >
+                                            Insert
+                                    </Button>
+                                    }
+
+                                />
+                            </Form>
                         </Col>
                     </Row>
                 </Grid>
