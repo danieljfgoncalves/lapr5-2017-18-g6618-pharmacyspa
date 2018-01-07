@@ -29,7 +29,16 @@ class Insert extends Component {
     }
 
     componentWillMount() {
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy')
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem("token"),
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET
+            },
+        })
             .then(results => {
                 return results.json();
             })
@@ -51,7 +60,16 @@ class Insert extends Component {
 
     componentDidUpdate() {
         if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value)
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem("token"),
+                    client_id: process.env.CLIENT_ID,
+                    client_secret: process.env.CLIENT_SECRET
+                },
+            })
                 .then(results => {
                     return results.json();
                 })
@@ -177,10 +195,10 @@ class Insert extends Component {
     }*/
     render() {
         var table = null;
-        if(this.state.dataTable.dataRows.length!==0){
-            table = <Table title="Stocks" content={this.state.dataTable}/>
-            console.log("Table",table);
-        }else{
+        if (this.state.dataTable.dataRows.length !== 0) {
+            table = <Table title="Stocks" content={this.state.dataTable} />
+            console.log("Table", table);
+        } else {
             table = null;
         }
         return (

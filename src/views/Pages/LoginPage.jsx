@@ -14,6 +14,8 @@ class LoginPage extends Component {
         super(props);
         this.state = {
             cardHidden: true,
+            cardHidden2: true,
+            cardTitle: "Login Failed",
         }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -22,7 +24,7 @@ class LoginPage extends Component {
     }
 
     handleSubmit(event) {
-        alert('A email was submitted: ' + this.email.value + ' Password: ' + this.password.value);
+        //alert('A email was submitted: ' + this.email.value + ' Password: ' + this.password.value);
         event.preventDefault();
         fetch('http://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
             method: 'POST',
@@ -38,7 +40,15 @@ class LoginPage extends Component {
             return results.json();
         })
             .then(data => {
-                
+                console.log(data);
+
+                if (data.error == null) {
+                    localStorage.setItem("token", data.token_type + " " + data.token);
+                    this.setState({ cardHidden2: false, cardTitle: "Login Sucessful" })
+                    setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
+                } else {
+                    this.setState({ cardHidden2: false, cardTitle: "Login Failed" })
+                }
             })
     }
 
@@ -82,6 +92,11 @@ class LoginPage extends Component {
                                     </Button>
                                 }
                                 ftTextCenter
+                            />
+                            <Card
+                                hidden={this.state.cardHidden2}
+                                textCenter
+                                content={<div className="text-center"><b>{this.state.cardTitle}</b></div>}
                             />
                         </form>
                     </Col>

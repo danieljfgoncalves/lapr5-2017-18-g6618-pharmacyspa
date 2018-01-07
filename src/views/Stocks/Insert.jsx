@@ -29,7 +29,16 @@ class Insert extends Component {
 
 
     componentWillMount() {
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy')
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem("token"),
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET
+            },
+        })
             .then(results => {
                 return results.json();
             })
@@ -45,7 +54,16 @@ class Insert extends Component {
                 this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
             });
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation')
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem("token"),
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET
+            },
+        })
             .then(results => {
                 return results.json();
             })
@@ -70,7 +88,16 @@ class Insert extends Component {
                 this.setState({ lastSelected: this.state.singleSelect, presentationsDisabled: false });
         }
         if (this.state.selectedPresentation !== null && this.state.lastPresentation !== this.state.selectedPresentation) {
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value)
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem("token"),
+                    client_id: process.env.CLIENT_ID,
+                    client_secret: process.env.CLIENT_SECRET
+                },
+            })
                 .then(results => {
                     return results.json();
                 })
