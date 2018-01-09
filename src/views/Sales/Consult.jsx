@@ -30,7 +30,7 @@ class Consult extends Component {
     }
 
     componentWillMount() {
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -44,17 +44,17 @@ class Consult extends Component {
                 return results.json();
             })
             .then(data => {
-                let pharmacies = data.map((pharmacy) => {
-                    return {
-                        value: pharmacy._id,
-                        label: pharmacy.name
-                    }
+
+
+                this.setState({
+                    pharmacies: [{
+                        value: data._id,
+                        label: data.name
+                    }]
                 });
-
-
-                this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
             });
+
     }
 
     componentDidUpdate() {
@@ -74,7 +74,7 @@ class Consult extends Component {
                 })
                 .then(data => {
                     try {
-                        let rows = data.stocks.map((stock) => {
+                        let rows = data.map((stock) => {
                             console.log("Stock", stock);
                             return [
                                 stock._id,
@@ -109,7 +109,7 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table content={this.state.dataTable} />
+            table = <Table id="datatables" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = null;

@@ -30,7 +30,7 @@ class Consult extends Component {
     }
 
     componentWillMount() {
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -44,22 +44,23 @@ class Consult extends Component {
                 return results.json();
             })
             .then(data => {
-                let pharmacies = data.map((pharmacy) => {
-                    return {
-                        value: pharmacy._id,
-                        label: pharmacy.name
-                    }
+
+
+                this.setState({
+                    pharmacies: [{
+                        value: data._id,
+                        label: data.name
+                    }]
                 });
-
-
-                this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
             });
+
+
     }
 
     componentDidUpdate() {
         if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value, {
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value + '/restock', {
                 method: 'GET',
                 headers: {
                     Accept: 'application/json',
@@ -73,31 +74,27 @@ class Consult extends Component {
                     return results.json();
                 })
                 .then(data => {
-                    try {
-                        let rows = data.stocks.map((stock) => {
-                            console.log("Stock", stock);
-                            return [
-                                stock._id,
-                                stock.medicinePresentation.medicine,
-                                stock.medicinePresentation.form,
-                                stock.medicinePresentation.concentration,
-                                stock.medicinePresentation.packageQtt,
-                                stock.quantity,
-                                stock.date
-                            ];
-                        });
-                        console.log("DataRows", rows);
-                        var stocks = {
-                            headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
-                            dataRows: rows
-                        };
-                        console.log("Data", data);
-                        console.log("stocks", stocks);
-                        this.setState({ dataTable: stocks, lastSelected: this.state.singleSelect });
+                    let rows = data.map((stock) => {
+                        console.log("Stock", stock);
+                        return [
+                            stock._id,
+                            stock.medicinePresentation.medicine,
+                            stock.medicinePresentation.form,
+                            stock.medicinePresentation.concentration,
+                            stock.medicinePresentation.packageQtt,
+                            stock.quantity,
+                            stock.date
+                        ];
+                    });
+                    console.log("DataRows", rows);
+                    var stocks = {
+                        headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
+                        dataRows: rows
+                    };
+                    console.log("Data", data);
+                    console.log("stocks", stocks);
+                    this.setState({ dataTable: stocks, lastSelected: this.state.singleSelect });
 
-                    } catch (err) {
-                        console.log("No logs");
-                    }
                 }
                 );
         }
@@ -107,7 +104,7 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table content={this.state.dataTable} />
+            table = <Table id="datatables" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = null;

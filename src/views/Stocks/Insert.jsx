@@ -69,7 +69,7 @@ class Insert extends Component {
 
     componentWillMount() {
 
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy', {
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -83,17 +83,18 @@ class Insert extends Component {
                 return results.json();
             })
             .then(data => {
-                let pharmacies = data.map((pharmacy) => {
-                    return {
-                        value: pharmacy._id,
-                        label: pharmacy.name
-                    }
+
+
+                this.setState({
+                    pharmacies: [{
+                        value: data._id,
+                        label: data.name
+                    }]
                 });
-
-
-                this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
             });
+
+
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation', {
             method: 'GET',
             headers: {

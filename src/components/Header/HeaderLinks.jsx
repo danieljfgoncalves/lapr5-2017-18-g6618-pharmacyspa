@@ -18,7 +18,7 @@ class HeaderLinks extends Component {
         </Navbar.Form>*/}
                 <Nav pullRight>
                 <NavItem eventKey={3} href="#/pages/login-page">
-                <div className="text-danger"><i className="pe-7s-close-circle"></i> Log in</div>
+                <div className="text-danger"><i className="pe-7s-close-circle"></i> Log out</div>
                     </NavItem>
                     {/*<NavItem eventKey={3} href="#">
                         <i className="fa fa-line-chart"></i>

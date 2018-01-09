@@ -24,7 +24,7 @@ class Table extends Component {
         this.state = {
             title: this.props.title,
             dataTable: {
-                headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "MinQtt", "Qtt"],
+                headerRow: this.props.content.headerRow,
                 dataRows: this.props.content.dataRows
             }
         }
@@ -37,7 +37,7 @@ class Table extends Component {
         //     columns,
         //     ordering: false
         // });
-        $("#datatables").DataTable({
+        $("#" + this.props.id).DataTable({
             "pagingType": "full_numbers",
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             responsive: true,
@@ -46,23 +46,19 @@ class Table extends Component {
                 searchPlaceholder: "Search records",
             }
         });
-        var table = $('#datatables').DataTable();
+        var table = $('#' + this.props.id).DataTable();
     }
     render() {
         return <Card
             title={this.state.title}
             content={
                 <div className="fresh-datatables">
-                    <table id="datatables" ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+                    <table id={this.props.id} ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
                         <thead>
                             <tr>
-                                <th>{this.state.dataTable.headerRow[0]}</th>
-                                <th>{this.state.dataTable.headerRow[1]}</th>
-                                <th>{this.state.dataTable.headerRow[2]}</th>
-                                <th>{this.state.dataTable.headerRow[3]}</th>
-                                <th>{this.state.dataTable.headerRow[4]}</th>
-                                <th>{this.state.dataTable.headerRow[5]}</th>
-                                <th>{this.state.dataTable.headerRow[6]}</th>
+                                {this.state.dataTable.headerRow.map((header, key) => {
+                                    return (<th key={key}>{header}</th>)
+                                })}
                             </tr>
                         </thead>
                         <tbody>
@@ -72,7 +68,6 @@ class Table extends Component {
                                         <tr key={key}>
                                             {console.log("Key", key)}{
                                                 prop.map((prop, key) => {
-                                                    console.log("Prop", prop)
                                                     return (
                                                         <td key={key}>{prop}</td>
                                                     );
