@@ -8,6 +8,7 @@ import Card from 'components/Card/Card.jsx';
 
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import Checkbox from 'elements/CustomCheckbox/CustomCheckbox.jsx';
+import * as jwt_decode from 'jwt-decode';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -21,6 +22,10 @@ class LoginPage extends Component {
     }
     componentDidMount() {
         setTimeout(function () { this.setState({ cardHidden: false }); }.bind(this), 700);
+    }
+
+    componentWillMount() {
+        localStorage.clear();
     }
 
     handleSubmit(event) {
@@ -43,9 +48,28 @@ class LoginPage extends Component {
                 console.log(data);
 
                 if (data.error == null) {
-                    localStorage.setItem("token", data.token_type + " " + data.token);
-                    this.setState({ cardHidden2: false, cardTitle: "Login Sucessful" })
-                    setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
+                    const tokenDecoded = jwt_decode(data.token);
+                    let userInfo = {
+                        id: tokenDecoded.sub,
+                        name: this.email.value,
+                        email: tokenDecoded["https://lapr5.isep.pt/email"],
+                        pharmacy: tokenDecoded["https://lapr5.isep.pt/user_info"].pharmacist_id,
+                        roles: tokenDecoded["https://lapr5.isep.pt/roles"]
+                    }
+                    console.log("Roles", userInfo.roles);
+                    if (userInfo.roles.includes("pharmacist")) {
+                        localStorage.setItem("token", data.token_type + " " + data.token);
+                        localStorage.setItem("pharmacy_id", userInfo.pharmacy);
+                        //localStorage.setItem("pharmacy_id", "5a3eb5857250df36a8a828cc");
+
+                        localStorage.setItem("user", userInfo.name);
+
+
+                        this.setState({ cardHidden2: false, cardTitle: "Login Sucessful" })
+                        setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
+                    } else {
+                        this.setState({ cardHidden2: false, cardTitle: "Login Failed" })
+                    }
                 } else {
                     this.setState({ cardHidden2: false, cardTitle: "Login Failed" })
                 }
@@ -91,7 +115,7 @@ class LoginPage extends Component {
                                         Login
                                     </Button>
                                 }
-                                ftTextCenter
+
                             />
                             <Card
                                 hidden={this.state.cardHidden2}

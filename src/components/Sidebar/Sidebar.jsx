@@ -82,10 +82,10 @@ class Sidebar extends Component {
                         {/*<div className="photo">
                             <img src={avatar} alt="Avatar" />
     </div>*/}
-                        <div className="info">
+                        <div className="text-center">
                             <span>
-                                Username
-                                </span>
+                                <b> {localStorage.user} </b>
+                            </span>
                             {/* <a onClick={() => this.setState({ openAvatar: !this.state.openAvatar })}>
                                 
                                     Tania Andrew
@@ -177,7 +177,7 @@ class Sidebar extends Component {
                         }
                     </ul>
                 </div>
-            </div>
+            </div >
         );
     }
 }

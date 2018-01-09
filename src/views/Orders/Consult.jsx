@@ -13,7 +13,7 @@ import Card from 'components/Card/Card.jsx';
 import Table from 'components/Table/Table.jsx';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
-
+var config = require("../../config.js");
 
 class Consult extends Component {
     constructor(props) {
@@ -30,33 +30,52 @@ class Consult extends Component {
     }
 
     componentWillMount() {
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy')
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem("token"),
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
+            },
+        })
             .then(results => {
                 return results.json();
             })
             .then(data => {
-                let pharmacies = data.map((pharmacy) => {
-                    return {
-                        value: pharmacy._id,
-                        label: pharmacy.name
-                    }
+
+
+                this.setState({
+                    pharmacies: [{
+                        value: data._id,
+                        label: data.name
+                    }]
                 });
-
-
-                this.setState({ pharmacies: pharmacies });
                 console.log("state", this.state.pharmacies);
             });
+
+
     }
 
     componentDidUpdate() {
         if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value + "/order")
+            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value + "/order", {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: localStorage.getItem("token"),
+                    client_id: config.CLIENT_ID,
+                    client_secret: config.CLIENT_SECRET
+                },
+            })
                 .then(results => {
                     return results.json();
                 })
                 .then(data => {
                     try {
-                        let rows = data.stocks.map((stock) => {
+                        let rows = data.map((stock) => {
                             console.log("Stock", stock);
                             return [
                                 stock._id,
@@ -90,7 +109,7 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table content={this.state.dataTable} />
+            table = <Table id="datatables"content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = null;
