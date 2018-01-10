@@ -34,7 +34,7 @@ class LoginPage extends Component {
         //alert('A email was submitted: ' + this.email.value + ' Password: ' + this.password.value);
         event.preventDefault();
         this.setState({ loading: true });
-        fetch('http://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
+        fetch('https://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
