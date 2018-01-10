@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Text, Component } from 'react';
 import {
     Grid, Row, Col,
     FormGroup, ControlLabel, FormControl
@@ -9,6 +9,7 @@ import Card from 'components/Card/Card.jsx';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import Checkbox from 'elements/CustomCheckbox/CustomCheckbox.jsx';
 import * as jwt_decode from 'jwt-decode';
+import Spinner from 'components/Spinner/Spinner.jsx';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class LoginPage extends Component {
             cardHidden: true,
             cardHidden2: true,
             cardTitle: "Login Failed",
+            loading: false,
         }
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -31,7 +33,8 @@ class LoginPage extends Component {
     handleSubmit(event) {
         //alert('A email was submitted: ' + this.email.value + ' Password: ' + this.password.value);
         event.preventDefault();
-        fetch('http://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
+        this.setState({ loading: true });
+        fetch('https://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -51,7 +54,7 @@ class LoginPage extends Component {
                     const tokenDecoded = jwt_decode(data.token);
                     let userInfo = {
                         id: tokenDecoded.sub,
-                        name: this.email.value,
+                        name: tokenDecoded["https://lapr5.isep.pt/username"],
                         email: tokenDecoded["https://lapr5.isep.pt/email"],
                         pharmacy: tokenDecoded["https://lapr5.isep.pt/user_info"].pharmacist_id,
                         roles: tokenDecoded["https://lapr5.isep.pt/roles"]
@@ -65,20 +68,24 @@ class LoginPage extends Component {
                         localStorage.setItem("user", userInfo.name);
 
 
-                        this.setState({ cardHidden2: false, cardTitle: "Login Sucessful" })
+                        this.setState({ cardHidden2: false, cardTitle: "Login Sucessful", loading: false })
                         setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
                     } else {
-                        this.setState({ cardHidden2: false, cardTitle: "Login Failed" })
+                        this.setState({ cardHidden2: false, cardTitle: "Login Failed", loading: false })
                     }
                 } else {
-                    this.setState({ cardHidden2: false, cardTitle: "Login Failed" })
+                    this.setState({ cardHidden2: false, cardTitle: "Login Failed", loading: false })
                 }
             })
     }
 
     render() {
+        /**
+        if (this.state.loading) {
+            return <Spinner />
+        }*/
         return (
-            <Grid>
+            < Grid >
                 <Row>
                     <Col md={4} sm={6} mdOffset={4} smOffset={3}>
                         <form onSubmit={this.handleSubmit}>
@@ -110,13 +117,18 @@ class LoginPage extends Component {
                                         </FormGroup>
                                     </div>
                                 }
+
                                 legend={
-                                    <Button type="submit" bsStyle="info" fill wd >
-                                        Login
-                                    </Button>
-                                }
+                                    <div>
+                                        <Spinner show={this.state.loading} />
+                                        <Button type="submit" bsStyle="info" fill wd >
+                                            Login
+                                        </Button>
+                                    </div>
+                                } ftTextCenter
 
                             />
+
                             <Card
                                 hidden={this.state.cardHidden2}
                                 textCenter
@@ -125,7 +137,7 @@ class LoginPage extends Component {
                         </form>
                     </Col>
                 </Row>
-            </Grid>
+            </Grid >
         );
     }
 }

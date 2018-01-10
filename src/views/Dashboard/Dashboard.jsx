@@ -33,7 +33,7 @@ import {
     responsiveBar,
     table_data
 } from 'variables/Variables.jsx';
-import Simple from '../../components/Boards/Simple';
+
 
 const colorScale = scaleLinear()
     .domain([0, 1, 6820])
@@ -47,6 +47,22 @@ var options = {
 };
 
 class Dashboard extends Component {
+
+constructor(props) {
+    super(props);
+    this.state = {
+    windowHeight: window.innerHeight,
+    windowWidth: window.innerWidth
+};
+    this.handleResize = this.handleResize.bind(this);
+}
+
+handleResize(e) {
+    this.setState({
+        windowHeight: window.innerHeight,
+        windowWidth: window.innerWidth
+    })
+};
 
     componentWillMount()
     {
@@ -145,6 +161,18 @@ class Dashboard extends Component {
         });
 
     }
+
+
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+
+
     render() {
 
 
@@ -153,6 +181,7 @@ class Dashboard extends Component {
        // console.log(data);
 
         return (
+
           <div>
             <Card
                 title={<legend>Stock information - Quantity overview</legend>}
@@ -180,7 +209,6 @@ class Dashboard extends Component {
           />
 
           </div>
-
 
 
         );

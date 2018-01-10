@@ -8,6 +8,9 @@ import Card from 'components/Card/Card.jsx';
 import Select from 'react-select';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import 'react-select/dist/react-select.css';
+import Spinner from 'components/Spinner/Spinner.jsx';
+import SweetAlert from 'react-bootstrap-sweetalert';
+
 var config = require("../../config.js")
 
 class Insert extends Component {
@@ -23,16 +26,56 @@ class Insert extends Component {
             selectedPresentation: null,
             selectedMedicine: null,
             lastSelected: null,
-            lastPresentation: null
+            lastPresentation: null,
+            loading: false,
+            alert: null,
+
         }
+        this.hideAlert = this.hideAlert.bind(this);
     }
 
+    hideAlert() {
+        window.location.reload();
+    }
+    successAlert() {
+        this.setState({
+            alert: (
+                <SweetAlert
+                    success
+                    style={{ display: "block" }}
+                    title="Created!"
+                    onConfirm={() => this.hideAlert()}
+                    onCancel={() => this.hideAlert()}
+                    confirmBtnBsStyle="info"
+                >
+                    This operation was successfull.
+                </SweetAlert>
+            )
+        });
+    }
+    failAlert() {
+        this.setState({
+            alert: (
+                <SweetAlert
+                    success={false}
+                    style={{ display: "block", marginTop: "-100px" }}
+                    title="Failed!"
+                    onConfirm={() => this.hideAlert()}
+                    onCancel={() => this.hideAlert()}
+                    confirmBtnBsStyle="info"
+                >
+                    This operation failed.
+                </SweetAlert>
+            )
+        });
+    }
     handleSubmit(event) {
         event.preventDefault();
         console.log(event);
         if (this.state.singleSelect == null || this.state.selectedPresentation == null || this.state.selectedMedicine == null || this.qtd == null) {
             alert("BAD INFO");
         } else {
+            this.setState({ loading: true });
             //todo validate qtd
             //console.log("Selected Presentation", this.state.selectedPresentation);
             //console.log("Selected Medicine", this.state.selectedMedicine);
@@ -57,8 +100,9 @@ class Insert extends Component {
                 return results.json();
             }).then(data => {
                 try {
-                    if (data.message == "Restock Created") {
-                        alert("Successfull!");
+                    if (data.message === "Restock Created") {
+                        this.setState({ loading: false });
+                        this.successAlert();
                     }
                 } catch (err) {
                     console.log("Error getting medicines", err);
@@ -68,7 +112,7 @@ class Insert extends Component {
     }
 
     componentWillMount() {
-
+        this.setState({ loading: true });
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
@@ -117,7 +161,7 @@ class Insert extends Component {
                     }
                 })
                 console.log("Presentations", presentations);
-                this.setState({ presentations: presentations });
+                this.setState({ presentations: presentations, loading: false });
             });
     }
     componentDidUpdate() {
@@ -126,6 +170,7 @@ class Insert extends Component {
                 this.setState({ lastSelected: this.state.singleSelect, presentationsDisabled: false });
         }
         if (this.state.selectedPresentation !== null && this.state.lastPresentation !== this.state.selectedPresentation) {
+            this.setState({ loading: true, lastPresentation: this.state.selectedPresentation });
             fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation/' + this.state.selectedPresentation.value, {
                 method: 'GET',
                 headers: {
@@ -151,7 +196,7 @@ class Insert extends Component {
                         });
 
                         console.log("Medicines", med);
-                        this.setState({ lastPresentation: this.state.selectedPresentation, medicines: med, medicinesDisabled: false });
+                        this.setState({ medicines: med, medicinesDisabled: false, loading: false });
                     } catch (err) {
                         console.log("Error getting medicines", err);
                     }
@@ -165,83 +210,88 @@ class Insert extends Component {
 
         return (
             <div className="main-content">
+                {this.state.alert}
                 <Grid fluid>
                     <Row>
                         <Col md={12}>
                             <Form horizontal onSubmit={this.handleSubmit.bind(this)}>
                                 <Card
                                     title={<legend>Insert Stocks Form</legend>}
-                                    content={<div>
-                                        <fieldset>
-                                            <FormGroup>
-                                                <ControlLabel className="col-sm-2">
-                                                    Pharmacy
+                                    content={
+                                        <div>
+                                            <fieldset>
+                                                <FormGroup>
+                                                    <ControlLabel className="col-sm-2">
+                                                        Pharmacy
                                                 </ControlLabel>
-                                                <Col md={4}>
-                                                    <Select
-                                                        placeholder="Select Pharmacy"
-                                                        name="singleSelect"
-                                                        value={this.state.singleSelect}
-                                                        options={this.state.pharmacies}
-                                                        onChange={(value) => this.setState({ singleSelect: value })}
-                                                    />
-                                                </Col>
-                                            </FormGroup>
-                                        </fieldset>
-                                        <fieldset>
-                                            <FormGroup>
-                                                <ControlLabel className="col-sm-2">
-                                                    Presentation
+                                                    <Col md={8}>
+                                                        <Select
+                                                            placeholder="Select Pharmacy"
+                                                            name="singleSelect"
+                                                            value={this.state.singleSelect}
+                                                            options={this.state.pharmacies}
+                                                            onChange={(value) => this.setState({ singleSelect: value })}
+                                                        />
+                                                    </Col>
+                                                </FormGroup>
+                                            </fieldset>
+                                            <fieldset>
+                                                <FormGroup>
+                                                    <ControlLabel className="col-sm-2">
+                                                        Presentation
                                                 </ControlLabel>
-                                                <Col sm={4}>
-                                                    <Select
-                                                        placeholder="Select Drug"
-                                                        name="singleSelect2"
-                                                        value={this.state.selectedPresentation}
-                                                        options={this.state.presentations}
-                                                        onChange={(value) => this.setState({ selectedPresentation: value })}
-                                                        disabled={this.state.presentationsDisabled}
-                                                    />
-                                                </Col>
-                                            </FormGroup>
-                                        </fieldset>
-                                        <fieldset>
-                                            <FormGroup>
-                                                <ControlLabel className="col-sm-2">
-                                                    Medicine
+                                                    <Col md={8}>
+                                                        <Select
+                                                            placeholder="Select Drug"
+                                                            name="singleSelect2"
+                                                            value={this.state.selectedPresentation}
+                                                            options={this.state.presentations}
+                                                            onChange={(value) => this.setState({ selectedPresentation: value })}
+                                                            disabled={this.state.presentationsDisabled}
+                                                        />
+                                                    </Col>
+                                                </FormGroup>
+                                            </fieldset>
+                                            <fieldset>
+                                                <FormGroup>
+                                                    <ControlLabel className="col-sm-2">
+                                                        Medicine
                                                 </ControlLabel>
-                                                <Col sm={4}>
-                                                    <Select
-                                                        placeholder="Select Medicine"
-                                                        name="singleSelect2"
-                                                        value={this.state.selectedMedicine}
-                                                        options={this.state.medicines}
-                                                        onChange={(value) => this.setState({ selectedMedicine: value })}
-                                                        disabled={this.state.medicinesDisabled}
-                                                    />
-                                                </Col>
-                                            </FormGroup>
-                                        </fieldset>
-                                        <fieldset>
-                                            <FormGroup>
-                                                <ControlLabel className="col-sm-2">
-                                                    Quantity
+                                                    <Col md={8}>
+                                                        <Select
+                                                            placeholder="Select Medicine"
+                                                            name="singleSelect2"
+                                                            value={this.state.selectedMedicine}
+                                                            options={this.state.medicines}
+                                                            onChange={(value) => this.setState({ selectedMedicine: value })}
+                                                            disabled={this.state.medicinesDisabled}
+                                                        />
+                                                    </Col>
+                                                </FormGroup>
+                                            </fieldset>
+                                            <fieldset>
+                                                <FormGroup>
+                                                    <ControlLabel className="col-sm-2">
+                                                        Quantity
                                                 </ControlLabel>
-                                                <Col sm={4}>
-                                                    <FormControl
-                                                        placeholder="1"
-                                                        type="text"
-                                                        inputRef={(qtd) => this.qtd = qtd}
-                                                    />
-                                                </Col>
-                                            </FormGroup>
-                                        </fieldset>
-                                    </div>}
+                                                    <Col md={8}>
+                                                        <FormControl
+                                                            placeholder="1"
+                                                            type="text"
+                                                            inputRef={(qtd) => this.qtd = qtd}
+                                                        />
+                                                    </Col>
+                                                </FormGroup>
+                                            </fieldset>
+                                        </div>}
                                     legend={
-                                        <Button type="submit" bsStyle="info" fill wd >
-                                            Insert
-                                    </Button>
-                                    }
+                                        <div>
+                                            <Spinner show={this.state.loading} />
+                                            <Button type="submit" bsStyle="info" fill wd >
+                                                Insert
+                                            </Button>
+                                        </div>
+                                    } ftTextCenter
 
                                 />
                             </Form>
