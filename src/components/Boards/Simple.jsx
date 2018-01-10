@@ -37,7 +37,7 @@ class Simple extends React.Component {
   }
 
   render() {
-    const {
+    var {
       width,
       height,
     } = this.props;

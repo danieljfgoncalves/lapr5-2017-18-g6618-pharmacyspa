@@ -36,10 +36,34 @@ const colorScale = scaleLinear()
     .range(["#E5E5E5", "#B2B2B2", "#000000"]);
 
 class Dashboard extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth
+        };
+        this.handleResize = this.handleResize.bind(this);
+    }
+
+    handleResize(e) {
+        this.setState({
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth
+        })
+    };
+
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    }
+
     render() {
         return (
             <div className="main-content">
-                <Simple width="800" height="400" />
+
             </div>
         );
     }

@@ -13,6 +13,7 @@ import Card from 'components/Card/Card.jsx';
 import Table from 'components/Table/Table.jsx';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
+import Spinner from 'components/Spinner/Spinner.jsx';
 var config = require("../../config.js");
 
 class Consult extends Component {
@@ -25,11 +26,13 @@ class Consult extends Component {
                 dataRows: []
             },
             singleSelect: null,
-            lastSelected: null
+            lastSelected: null,
+            loading: false,
         }
     }
 
     componentWillMount() {
+        this.setState({ loading: true });
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
@@ -50,7 +53,8 @@ class Consult extends Component {
                     pharmacies: [{
                         value: data._id,
                         label: data.name
-                    }]
+                    }],
+                    loading: false
                 });
                 console.log("state", this.state.pharmacies);
             });
@@ -60,6 +64,7 @@ class Consult extends Component {
 
     componentDidUpdate() {
         if (this.state.singleSelect !== null && this.state.lastSelected !== this.state.singleSelect) {
+            this.setState({ lastSelected: this.state.singleSelect, loading: true });
             fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + this.state.singleSelect.value + "/order", {
                 method: 'GET',
                 headers: {
@@ -95,7 +100,7 @@ class Consult extends Component {
                         };
                         console.log("Data", data);
                         console.log("stocks", stocks);
-                        this.setState({ dataTable: stocks, lastSelected: this.state.singleSelect });
+                        this.setState({ dataTable: stocks, loading: false });
 
                     } catch (err) {
                         console.log("No logs");
@@ -109,10 +114,10 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table id="datatables"content={this.state.dataTable} />
+            table = <Table id="datatables" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
-            table = null;
+            table = <Spinner show={this.state.loading} />;
         }
         return (
             <div className="main-content">
