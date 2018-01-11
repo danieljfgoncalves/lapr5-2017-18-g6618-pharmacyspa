@@ -22,7 +22,7 @@ class Consult extends Component {
         this.state = {
             pharmacies: [],
             dataTable: {
-                headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "MinQtt", "Qtt"],
+                headerRow: ["Id", "Medicine", "Form", "Concentration", "PackageQtt", "QttNeeded", "Date", "DayPeriod"],
                 dataRows: []
             },
             singleSelect: null,
@@ -84,18 +84,18 @@ class Consult extends Component {
                             console.log("Stock", stock);
                             return [
                                 stock._id,
-                                stock.date,
                                 stock.medicinePresentation.medicine,
                                 stock.medicinePresentation.form,
                                 stock.medicinePresentation.concentration,
                                 stock.medicinePresentation.packageQtt,
                                 stock.qttNeeded,
+                                stock.date,
                                 stock.period_day
                             ];
                         });
                         console.log("DataRows", rows);
                         var stocks = {
-                            headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
+                            headerRow: ["Id", "Medicine", "Form", "Concentration", "PackageQtt", "QttNeeded", "Date", "DayPeriod"],
                             dataRows: rows
                         };
                         console.log("Data", data);

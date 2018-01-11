@@ -62,7 +62,7 @@ class Table extends Component {
                 title={this.props.title}
                 content={
                     <div className="fresh-datatables">
-                        <table id={this.props.id} ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+                        <table id="datatables" ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
                             <thead>
                                 <tr>
                                     {this.state.dataTable.headerRow.map((header, key) => {

@@ -36,7 +36,10 @@ class Insert extends Component {
     }
 
     hideAlert() {
-        window.location.reload();
+        this.setState({
+            alert: null
+        });
+        setTimeout(window.location.reload(), 2000);
     }
     successAlert() {
         this.setState({
@@ -128,18 +131,30 @@ class Insert extends Component {
             },
         })
             .then(results => {
-                return results.json();
+                if (results.status !== 500)
+                    return results.json();
+                else
+                    return null;
             })
             .then(data => {
-
-
-                this.setState({
-                    pharmacies: [{
-                        value: data._id,
-                        label: data.name
-                    }]
-                });
-                console.log("state", this.state.pharmacies);
+                try {
+                    if (data.error == null) {
+                        this.setState({
+                            pharmacies: [{
+                                value: data._id,
+                                label: data.name
+                            }],
+                            loading1: false,
+                        });
+                        console.log("state", this.state.pharmacies);
+                    } else {
+                        this.setState({ loading1: false });
+                        this.failAlert();
+                    }
+                } catch (error) {
+                    this.setState({ loading1: false });
+                    this.failAlert();
+                }
             });
 
 
@@ -154,18 +169,31 @@ class Insert extends Component {
             },
         })
             .then(results => {
-                return results.json();
+                if (results.status !== 500)
+                    return results.json();
+                else
+                    return null;
             })
             .then(data => {
-                console.log("PRESENTATIONS", data);
-                let presentations = data.map((presentation) => {
-                    return {
-                        value: presentation.id,
-                        label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
+                try {
+                    if (data.error == null) {
+                        console.log("PRESENTATIONS", data);
+                        let presentations = data.map((presentation) => {
+                            return {
+                                value: presentation.id,
+                                label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
+                            }
+                        })
+                        console.log("Presentations", presentations);
+                        this.setState({ presentations: presentations, loading: false });
+                    } else {
+                        this.setState({ loading: false });
+                        this.failAlert();
                     }
-                })
-                console.log("Presentations", presentations);
-                this.setState({ presentations: presentations, loading: false });
+                } catch (error) {
+                    this.setState({ loading: false });
+                    this.failAlert();
+                }
             });
     }
     componentDidUpdate() {
@@ -208,7 +236,7 @@ class Insert extends Component {
         }
     }
     render() {
-        if (this.state.pharmacies.length === 0) {
+        if (this.state.loading1) {
             return <Spinner show={this.state.loading1} />
         }
         return (

@@ -5,8 +5,8 @@ import { Grid, Col, Row } from 'react-bootstrap';
 import ChartistGraph from 'react-chartist';
 // function that returns a color based on an interval of numbers
 import { scaleLinear } from "d3-scale";
-
-import {getStockInfo,getSalesInfo, getOrdersInfo} from '../../components/Information/Information';
+import Spinner from 'components/Spinner/Spinner.jsx';
+import { getStockInfo, getSalesInfo, getOrdersInfo } from '../../components/Information/Information';
 import $ from 'jquery';
 
 // react components used to create a SVG / Vector map
@@ -48,27 +48,29 @@ var options = {
 
 class Dashboard extends Component {
 
-constructor(props) {
-    super(props);
-    this.state = {
-    windowHeight: window.innerHeight,
-    windowWidth: window.innerWidth
-};
-    this.handleResize = this.handleResize.bind(this);
-}
+    constructor(props) {
+        super(props);
+        this.state = {
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth,
+            loading1: false,
+            loading2: false,
+            loading3: false,
+        };
+        this.handleResize = this.handleResize.bind(this);
+    }
 
-handleResize(e) {
-    this.setState({
-        windowHeight: window.innerHeight,
-        windowWidth: window.innerWidth
-    })
-};
+    handleResize(e) {
+        this.setState({
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth
+        })
+    };
 
-    componentWillMount()
-    {
+    componentWillMount() {
 
-
-        getStockInfo().then((stock_info) =>{
+        this.setState({ loading1: true });
+        getStockInfo().then((stock_info) => {
 
             var series1 = [];
             var series2 = [];
@@ -76,8 +78,7 @@ handleResize(e) {
                 labels: [],
                 series: []
             };
-            for(var i = 0; i < stock_info.length;i++)
-            {
+            for (var i = 0; i < stock_info.length; i++) {
                 data.labels.push(stock_info[i][1] + " min/current stock");
 
                 series1.push(stock_info[i][5]);
@@ -87,10 +88,12 @@ handleResize(e) {
             data.series.push(series2);
             stocksData = data;
 
-            this.setState({ stocksData });
+            this.setState({ stocksData, loading1: false });
 
         });
-        getSalesInfo().then((sales_info) =>{
+
+        this.setState({ loading2: true });
+        getSalesInfo().then((sales_info) => {
             var series1 = [];
             var map = [];
             var data = {
@@ -98,21 +101,18 @@ handleResize(e) {
                 series: []
             };
 
-            for(var i = 0; i < sales_info.length;i++)
-            {
+            for (var i = 0; i < sales_info.length; i++) {
 
-                if(data.labels.indexOf(sales_info[i][3]) == -1)
-                {
+                if (data.labels.indexOf(sales_info[i][3]) == -1) {
                     data.labels.push(sales_info[i][3]);
                     map[sales_info[i][3]] = sales_info[i][7];
                 }
-                else{
+                else {
                     map[sales_info[i][3]] += sales_info[i][7];
                 }
             }
 
-            for(var i = 0 ; i < data.labels.length;i++)
-            {
+            for (var i = 0; i < data.labels.length; i++) {
                 series1.push(map[data.labels[i]]);
             }
 
@@ -120,9 +120,11 @@ handleResize(e) {
 
             salesData = data;
 
-            this.setState({ salesData });
+            this.setState({ salesData, loading2: false });
         });
-        getOrdersInfo().then((orders_info) =>{
+
+        this.setState({ loading3: true })
+        getOrdersInfo().then((orders_info) => {
             var map = [];
             var series1 = [];
 
@@ -131,23 +133,20 @@ handleResize(e) {
                 series: []
             };
             console.log(orders_info);
-            for(var i = 0; i < orders_info.length;i++)
-            {
+            for (var i = 0; i < orders_info.length; i++) {
                 var formatedDate = orders_info[i][1].split("T")[0];
-                if(data.labels.indexOf(formatedDate) == -1) {
+                if (data.labels.indexOf(formatedDate) == -1) {
                     data.labels.push(formatedDate);
                     map[formatedDate] = 0;
                 }
 
             }
-            for(var i = 0; i < orders_info.length;i++)
-            {
+            for (var i = 0; i < orders_info.length; i++) {
                 var formatedDate = orders_info[i][1].split("T")[0];
                 map[formatedDate] += orders_info[i][6];
             }
             console.log(map);
-            for(var i = 0 ; i < data.labels.length;i++)
-            {
+            for (var i = 0; i < data.labels.length; i++) {
 
                 series1.push(map[data.labels[i]]);
             }
@@ -156,7 +155,7 @@ handleResize(e) {
             ordersData = data;
 
 
-            this.setState({ ordersData });
+            this.setState({ ordersData, loading3: false });
 
         });
 
@@ -178,37 +177,40 @@ handleResize(e) {
 
 
         var type = 'Bar'
-       // console.log(data);
+        // console.log(data);
 
         return (
 
-          <div>
-            <Card
-                title={<legend>Stock information - Quantity overview</legend>}
-                content={
+            <div>
+                <Card
+                    title={<legend>Stock information - Quantity overview</legend>}
+                    content={
+                        <div>
+                            {this.state.loading1 ? <Spinner show={this.state.loading1} /> :
+                                <ChartistGraph data={stocksData} options={options} type={type} />}
+                        </div>
+                    }
+                />
+                <Card
+                    title={<legend>Sales information - Quantity sold</legend>}
+                    content={
+                        <div>
+                            {this.state.loading2 ? <Spinner show={this.state.loading2} /> :
+                                <ChartistGraph data={salesData} options={options} type={type} />}
+                        </div>
+                    }
+                />
+                <Card
+                    title={<legend>Orders information - Overview by date</legend>}
+                    content={
+                        <div>
+                            {this.state.loading3 ? <Spinner show={this.state.loading3} /> :
+                                <ChartistGraph data={ordersData} options={options} type='Line' />}
+                        </div>
+                    }
+                />
 
-                    <ChartistGraph data={stocksData} options={options} type={type}/>
-
-                }
-            />
-          <Card
-              title={<legend>Sales information - Quantity sold</legend>}
-              content={
-
-                  <ChartistGraph data={salesData} options={options} type={type}/>
-
-              }
-          />
-          <Card
-              title={<legend>Orders information - Overview by date</legend>}
-              content={
-
-                  <ChartistGraph data={ordersData} options={options} type='Line'/>
-
-              }
-          />
-
-          </div>
+            </div>
 
 
         );

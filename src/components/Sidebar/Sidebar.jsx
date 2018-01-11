@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Collapse } from 'react-bootstrap';
+import { Row, Collapse } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 // this is used to create scrollbars on windows devices like the ones from apple devices
 import * as Ps from 'perfect-scrollbar';
@@ -67,26 +67,29 @@ class Sidebar extends Component {
 
             <div className="sidebar" data-color="black" data-image={image}>
                 <div className="sidebar-background" style={bgImage}></div>
-                {/*<div className="logo">
-                	<a href="http://www.creative-tim.com" className="simple-text logo-mini">
+                <div className="logo">
+                    <a className="simple-text logo-mini">
                         <div className="logo-img">
                             <img src={logo} alt="react-logo" />
                         </div>
-                	</a>
-                	<a href="http://www.creative-tim.com" className="simple-text logo-normal">
-                		Creative Tim
-                	</a>
-        </div>*/}
+                    </a>
+                    <a className="simple-text logo-normal">
+                        Pharmacy SPA
+                    </a>
+                </div>
                 <div className="sidebar-wrapper" ref="sidebarWrapper">
                     <div className="user">
                         {/*<div className="photo">
                             <img src={avatar} alt="Avatar" />
     </div>*/}
-                        <div className="text-center">
-                            <span>
-                                <b> {localStorage.user} </b>
-                            </span>
-                            {/* <a onClick={() => this.setState({ openAvatar: !this.state.openAvatar })}>
+                        <div className="info text-center">
+                            <a>
+                                <span>
+                                    {localStorage.user}
+                                </span>
+                            </a>
+                        </div>
+                        {/* <a onClick={() => this.setState({ openAvatar: !this.state.openAvatar })}>
                                 
                                     Tania Andrew
                                     <b className={this.state.openAvatar ? "caret rotate-180" : "caret"}></b>
@@ -114,8 +117,8 @@ class Sidebar extends Component {
                                     </li>
                                 </ul>
 </Collapse>*/}
-                        </div>
                     </div>
+
 
                     <ul className="nav">
                         {/* If we are on responsive, we want both links from navbar and sidebar
