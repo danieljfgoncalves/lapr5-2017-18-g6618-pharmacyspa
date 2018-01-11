@@ -28,6 +28,7 @@ class Insert extends Component {
             lastSelected: null,
             lastPresentation: null,
             loading: false,
+            loading1: false,
             alert: null,
 
         }
@@ -72,8 +73,8 @@ class Insert extends Component {
     handleSubmit(event) {
         event.preventDefault();
         console.log(event);
-        if (this.state.singleSelect == null || this.state.selectedPresentation == null || this.state.selectedMedicine == null || this.qtd == null) {
-            alert("BAD INFO");
+        if (this.state.singleSelect == null || this.state.selectedPresentation == null || this.state.selectedMedicine == null || this.qtd.value == null) {
+            this.failAlert();
         } else {
             this.setState({ loading: true });
             //todo validate qtd
@@ -103,6 +104,9 @@ class Insert extends Component {
                     if (data.message === "Restock Created") {
                         this.setState({ loading: false });
                         this.successAlert();
+                    } else {
+                        this.setState({ loading: false });
+                        this.failAlert();
                     }
                 } catch (err) {
                     console.log("Error getting medicines", err);
@@ -112,7 +116,7 @@ class Insert extends Component {
     }
 
     componentWillMount() {
-        this.setState({ loading: true });
+        this.setState({ loading: true, loading1: true });
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
             method: 'GET',
             headers: {
@@ -205,9 +209,8 @@ class Insert extends Component {
     }
     render() {
         if (this.state.pharmacies.length === 0) {
-            return null;
+            return <Spinner show={this.state.loading1} />
         }
-
         return (
             <div className="main-content">
                 {this.state.alert}
@@ -276,7 +279,7 @@ class Insert extends Component {
                                                 </ControlLabel>
                                                     <Col md={8}>
                                                         <FormControl
-                                                            placeholder="1"
+                                                            placeholder="Insert quantity"
                                                             type="text"
                                                             inputRef={(qtd) => this.qtd = qtd}
                                                         />

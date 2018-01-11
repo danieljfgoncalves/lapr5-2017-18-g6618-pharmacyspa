@@ -34,7 +34,7 @@ class LoginPage extends Component {
         //alert('A email was submitted: ' + this.email.value + ' Password: ' + this.password.value);
         event.preventDefault();
         this.setState({ loading: true });
-        fetch('http://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
+        fetch('https://lapr5-g6618-receipts-management.azurewebsites.net/api/authenticate', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -49,31 +49,34 @@ class LoginPage extends Component {
         })
             .then(data => {
                 console.log(data);
+                try {
+                    if (data.error == null) {
+                        const tokenDecoded = jwt_decode(data.token);
+                        let userInfo = {
+                            id: tokenDecoded.sub,
+                            name: tokenDecoded["https://lapr5.isep.pt/username"],
+                            email: tokenDecoded["https://lapr5.isep.pt/email"],
+                            pharmacy: tokenDecoded["https://lapr5.isep.pt/user_info"].pharmacist_id,
+                            roles: tokenDecoded["https://lapr5.isep.pt/roles"]
+                        }
+                        console.log("Roles", userInfo.roles);
+                        if (userInfo.roles.includes("pharmacist")) {
+                            localStorage.setItem("token", data.token_type + " " + data.token);
+                            localStorage.setItem("pharmacy_id", userInfo.pharmacy);
+                            //localStorage.setItem("pharmacy_id", "5a3eb5857250df36a8a828cc");
 
-                if (data.error == null) {
-                    const tokenDecoded = jwt_decode(data.token);
-                    let userInfo = {
-                        id: tokenDecoded.sub,
-                        name: tokenDecoded["https://lapr5.isep.pt/username"],
-                        email: tokenDecoded["https://lapr5.isep.pt/email"],
-                        pharmacy: tokenDecoded["https://lapr5.isep.pt/user_info"].pharmacist_id,
-                        roles: tokenDecoded["https://lapr5.isep.pt/roles"]
-                    }
-                    console.log("Roles", userInfo.roles);
-                    if (userInfo.roles.includes("pharmacist")) {
-                        localStorage.setItem("token", data.token_type + " " + data.token);
-                        localStorage.setItem("pharmacy_id", userInfo.pharmacy);
-                        //localStorage.setItem("pharmacy_id", "5a3eb5857250df36a8a828cc");
-
-                        localStorage.setItem("user", userInfo.name);
+                            localStorage.setItem("user", userInfo.name);
 
 
-                        this.setState({ cardHidden2: false, cardTitle: "Login Sucessful", loading: false })
-                        setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
+                            this.setState({ cardHidden2: false, cardTitle: "Login Sucessful", loading: false })
+                            setTimeout(function () { this.props.history.push('/dashboard') }.bind(this), 1000);
+                        } else {
+                            this.setState({ cardHidden2: false, cardTitle: "Login Failed", loading: false })
+                        }
                     } else {
                         this.setState({ cardHidden2: false, cardTitle: "Login Failed", loading: false })
                     }
-                } else {
+                } catch (error) {
                     this.setState({ cardHidden2: false, cardTitle: "Login Failed", loading: false })
                 }
             })

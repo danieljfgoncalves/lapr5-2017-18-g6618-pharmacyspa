@@ -22,7 +22,6 @@ class Table extends Component {
     constructor(props, state) {
         super(props);
         this.state = {
-            title: this.props.title,
             dataTable: {
                 headerRow: this.props.content.headerRow,
                 dataRows: this.props.content.dataRows
@@ -48,40 +47,51 @@ class Table extends Component {
         });
         var table = $('#' + this.props.id).DataTable();
     }
+    componentWillUnmount() {
+        $('.data-table-wrapper')
+            .find('table')
+            .DataTable()
+            .destroy(true);
+    }
+    shouldComponentUpdate() {
+        return false;
+    }
     render() {
-        return <Card
-            title={this.state.title}
-            content={
-                <div className="fresh-datatables">
-                    <table id={this.props.id} ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
-                        <thead>
-                            <tr>
-                                {this.state.dataTable.headerRow.map((header, key) => {
-                                    return (<th key={key}>{header}</th>)
-                                })}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                this.state.dataTable.dataRows.map((prop, key) => {
-                                    return (
-                                        <tr key={key}>
-                                            {console.log("Key", key)}{
-                                                prop.map((prop, key) => {
-                                                    return (
-                                                        <td key={key}>{prop}</td>
-                                                    );
-                                                })
-                                            }
-                                        </tr>
-                                    )
-                                })
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        />
+        return <Col md={12}>
+            <Card
+                title={this.props.title}
+                content={
+                    <div className="fresh-datatables">
+                        <table id={this.props.id} ref="main" className="table table-striped table-no-bordered table-hover" cellSpacing="0" width="100%" style={{ width: "100%" }}>
+                            <thead>
+                                <tr>
+                                    {this.state.dataTable.headerRow.map((header, key) => {
+                                        return (<th key={key}>{header}</th>)
+                                    })}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    this.state.dataTable.dataRows.map((prop, key) => {
+                                        return (
+                                            <tr key={key}>
+                                                {
+                                                    prop.map((prop, key) => {
+                                                        return (
+                                                            <td key={key}>{prop}</td>
+                                                        );
+                                                    })
+                                                }
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            />
+        </Col>
     }
 }
 

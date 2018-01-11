@@ -65,6 +65,18 @@ class NewSale extends Component {
             alert("BAD INFO");
         } else {
             this.setState({ loading: true });
+            console.log("REQUEST", {
+                id_pharmacy: localStorage.pharmacy_id,
+                quantity: this.qtt.value,
+                prescription: {
+                    receiptId: this.state.receipt.id,
+                    prescriptionId: this.state.prescription._id,
+                    medicinePresentation: {
+                        id_medicine: this.state.selectedMedicine.value,
+                        id_presentation: this.state.prescription.presentation._id
+                    }
+                }
+            });
             fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/sale', {
                 method: 'POST',
                 headers: {
@@ -75,10 +87,10 @@ class NewSale extends Component {
                     client_secret: config.CLIENT_SECRET
                 },
                 body: JSON.stringify({
-                    id_pharmacy: localStorage.id_pharmacy,
+                    id_pharmacy: localStorage.pharmacy_id,
                     quantity: this.qtt.value,
                     prescription: {
-                        receiptId: this.state.receipt.id,
+                        receiptId: this.state.receipt._id,
                         prescriptionId: this.state.prescription._id,
                         medicinePresentation: {
                             id_medicine: this.state.selectedMedicine.value,

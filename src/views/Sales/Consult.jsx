@@ -83,8 +83,8 @@ class Consult extends Component {
                             console.log("Stock", stock);
                             return [
                                 stock._id,
-                                stock.receiptId,
-                                stock.prescriptionId,
+                                stock.prescription.receiptId,
+                                stock.prescription.prescriptionId,
                                 stock.prescription.medicinePresentation.medicine,
                                 stock.prescription.medicinePresentation.form,
                                 stock.prescription.medicinePresentation.concentration,
@@ -95,7 +95,7 @@ class Consult extends Component {
                         });
                         console.log("DataRows", rows);
                         var stocks = {
-                            headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
+                            headerRow: ["Id", "ReceiptID", "PrescriptionID", "Medicine", "Form", "Concentration", "Package Qtt", "Qtt", "Date"],
                             dataRows: rows
                         };
                         console.log("Data", data);
@@ -114,7 +114,7 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table id="datatables" content={this.state.dataTable} />
+            table = <Table id="datatables" title="Sale Logs" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = <Spinner show={this.state.loading} />;
@@ -125,7 +125,7 @@ class Consult extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title={<legend>Check Pharmacy Logs</legend>}
+                                title={<legend>Check Sale Logs</legend>}
                                 content={
                                     <Form horizontal>
                                         <fieldset>
@@ -147,8 +147,9 @@ class Consult extends Component {
                                     </Form>
                                 }
                             />
-                            {table}
+
                         </Col>
+                        {table}
                     </Row>
                 </Grid>
             </div>

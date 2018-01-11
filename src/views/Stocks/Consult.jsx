@@ -109,7 +109,7 @@ class Consult extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table id="datatables" content={this.state.dataTable} />
+            table = <Table id="datatables" title="Stock Logs" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = <Spinner show={this.state.loading} />;
@@ -120,7 +120,7 @@ class Consult extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title={<legend>Check Pharmacy Logs</legend>}
+                                title={<legend>Check Stock Logs</legend>}
                                 content={
                                     <Form horizontal>
                                         <fieldset>
@@ -139,11 +139,12 @@ class Consult extends Component {
                                                 </Col>
                                             </FormGroup>
                                         </fieldset>
+
                                     </Form>
                                 }
                             />
-                            {table}
                         </Col>
+                        {table}
                     </Row>
                 </Grid>
             </div>
