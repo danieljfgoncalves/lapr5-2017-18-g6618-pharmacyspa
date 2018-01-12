@@ -39,7 +39,7 @@ class Pages extends Component {
     render() {
         return (
             <div>
-                {/**<PagesHeader />**/}
+                {<PagesHeader />}
                 <div className="wrapper wrapper-full-page">
                     <div className={"full-page" + this.getPageClass()} data-color="black" data-image={bgImage}>
                         <div className="content">
@@ -53,7 +53,7 @@ class Pages extends Component {
                                 }
                             </Switch>
                         </div>
-                        {/**<Footer transparent/>**/}
+                        {<Footer transparent/>}
                         <div className="full-page-background" style={{ backgroundImage: "url(" + bgImage + ")" }}></div>
                     </div>
                 </div>

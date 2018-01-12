@@ -39,9 +39,46 @@ class NewSale extends Component {
 
 
     }
-
+    resetState() {
+        this.setState({
+            presentationsDisabled: true,
+            medicinesDisabled: true,
+            pharmacies: [],
+            presentations: [],
+            medicines: [],
+            singleSelect: null,
+            selectedPresentation: null,
+            selectedMedicine: null,
+            lastSelected: null,
+            lastPresentation: null,
+            receipt: null,
+            prescription: null,
+            loading: false,
+            alert: null,
+        })
+    }
     hideAlert() {
-        window.location.reload();
+        this.setState({
+            alert: null
+        });
+        //setTimeout(window.location.reload(), 2000);
+    }
+
+    failAlert() {
+        this.setState({
+            alert: (
+                <SweetAlert
+                    success={false}
+                    style={{ display: "block", marginTop: "-100px" }}
+                    title="Failed!"
+                    onConfirm={() => this.hideAlert()}
+                    onCancel={() => this.hideAlert()}
+                    confirmBtnBsStyle="info"
+                >
+                    {this.state.alertMessage}
+                </SweetAlert>
+            )
+        });
     }
     successAlert() {
         this.setState({
@@ -61,8 +98,9 @@ class NewSale extends Component {
     }
     handleSubmitFill(event) {
         event.preventDefault();
-        if (this.qtt === null && this.state.selectedMedicine === null) {
-            alert("BAD INFO");
+        if (this.qtt === null || this.state.selectedMedicine === null) {
+            this.setState({ loading: false, alertMessage: "All fields must be filled." });
+            this.failAlert();
         } else {
             this.setState({ loading: true });
             console.log("REQUEST", {
@@ -105,16 +143,23 @@ class NewSale extends Component {
                     if (data.message === "Sale Created") {
                         this.setState({ loading: false });
                         this.successAlert();
+                    } else {
+                        this.setState({ loading: false, alertMessage: data.message });
+                        this.failAlert();
                     }
                 } catch (err) {
                     console.log("Error getting medicines", err);
                 }
+            }).catch(error => {
+                this.setState({ loading: false, alertMessage: "Error loading receipt." });
+                this.failAlert();
             });
         }
     }
 
     handleSubmit(event) {
         event.preventDefault();
+        this.resetState();
         console.log(event);
         if (this.mrid === null) {
             alert("BAD INFO");
@@ -133,15 +178,24 @@ class NewSale extends Component {
                     client_secret: config.CLIENT_SECRET
                 },
             }).then(results => {
+                console.log(results);
                 return results.json();
             }).then(data => {
                 try {
-                    alert("Successfull!");
-                    this.setState({ receipt: data, loading: false })
-                    console.log("Receipt", data);
+                    console.log(data.error);
+                    if (data.error === undefined) {
+                        this.setState({ receipt: data, loading: false })
+                        console.log("Receipt", data);
+                    } else {
+                        this.setState({ loading: false, alertMessage: "Error loading receipt." });
+                        this.failAlert();
+                    }
                 } catch (err) {
                     console.log("Error getting receipt", err);
                 }
+            }).catch(error => {
+                this.setState({ loading: false, alertMessage: "Error loading receipt." });
+                this.failAlert();
             });
         }
     }
@@ -187,6 +241,8 @@ class NewSale extends Component {
                     } catch (err) {
                         console.log("Error getting medicines", err);
                     }
+                }).catch(error => {
+
                 });
         }
     }
@@ -201,6 +257,7 @@ class NewSale extends Component {
 
             return (
                 <div className="main-content">
+                    {this.state.alert}
                     <Grid fluid>
                         <Row>
                             <Col md={12}>

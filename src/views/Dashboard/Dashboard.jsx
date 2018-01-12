@@ -20,6 +20,7 @@ import {
 import Card from 'components/Card/Card.jsx';
 import StatsCard from 'components/Card/StatsCard.jsx';
 import Tasks from 'components/Tasks/Tasks.jsx';
+import SweetAlert from 'react-bootstrap-sweetalert';
 
 import THREE from 'react-three-renderer'
 
@@ -56,7 +57,11 @@ class Dashboard extends Component {
             loading1: false,
             loading2: false,
             loading3: false,
-        };
+            alert: null,
+            alertMessage: null,
+
+        }
+        this.hideAlert = this.hideAlert.bind(this);
         this.handleResize = this.handleResize.bind(this);
     }
 
@@ -66,7 +71,29 @@ class Dashboard extends Component {
             windowWidth: window.innerWidth
         })
     };
+    hideAlert() {
+        this.setState({
+            alert: null
+        });
+        //setTimeout(window.location.reload(), 2000);
+    }
 
+    failAlert() {
+        this.setState({
+            alert: (
+                <SweetAlert
+                    success={false}
+                    style={{ display: "block", marginTop: "-100px" }}
+                    title="Failed!"
+                    onConfirm={() => this.hideAlert()}
+                    onCancel={() => this.hideAlert()}
+                    confirmBtnBsStyle="info"
+                >
+                    {this.state.alertMessage}
+                </SweetAlert>
+            )
+        });
+    }
     componentWillMount() {
 
         this.setState({ loading1: true });
@@ -90,6 +117,9 @@ class Dashboard extends Component {
 
             this.setState({ stocksData, loading1: false });
 
+        }).catch(error => {
+            this.setState({ loading1: false, alertMessage: "Error loading stock logs." });
+            this.failAlert();
         });
 
         this.setState({ loading2: true });
@@ -121,6 +151,9 @@ class Dashboard extends Component {
             salesData = data;
 
             this.setState({ salesData, loading2: false });
+        }).catch(error => {
+            this.setState({ loading2: false, alertMessage: "Error loading sale logs." });
+            this.failAlert();
         });
 
         this.setState({ loading3: true })
@@ -157,6 +190,9 @@ class Dashboard extends Component {
 
             this.setState({ ordersData, loading3: false });
 
+        }).catch(error => {
+            this.setState({ loading3: false, alertMessage: "Error loading order logs." });
+            this.failAlert();
         });
 
     }
@@ -181,7 +217,8 @@ class Dashboard extends Component {
 
         return (
 
-            <div>
+            <div className="main-content">
+                {this.state.alert}
                 <Card
                     title={<legend>Stock information - Quantity overview</legend>}
                     content={

@@ -14,6 +14,8 @@ import Table from 'components/Table/Table.jsx';
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 import Spinner from 'components/Spinner/Spinner.jsx';
+import SweetAlert from 'react-bootstrap-sweetalert';
+
 var config = require("../../config.js");
 
 class Consult extends Component {
@@ -28,7 +30,35 @@ class Consult extends Component {
             singleSelect: null,
             lastSelected: null,
             loading: false,
+            alert: null,
+            alertMessage: null,
+
         }
+        this.hideAlert = this.hideAlert.bind(this);
+    }
+
+    hideAlert() {
+        this.setState({
+            alert: null
+        });
+        //setTimeout(window.location.reload(), 2000);
+    }
+
+    failAlert() {
+        this.setState({
+            alert: (
+                <SweetAlert
+                    success={false}
+                    style={{ display: "block", marginTop: "-100px" }}
+                    title="Failed!"
+                    onConfirm={() => this.hideAlert()}
+                    onCancel={() => this.hideAlert()}
+                    confirmBtnBsStyle="info"
+                >
+                    {this.state.alertMessage}
+                </SweetAlert>
+            )
+        });
     }
 
     componentWillMount() {
@@ -42,13 +72,13 @@ class Consult extends Component {
                 client_id: config.CLIENT_ID,
                 client_secret: config.CLIENT_SECRET
             },
-        })
-            .then(results => {
+        }).then(results => {
+            if (results.status !== 500)
                 return results.json();
-            })
-            .then(data => {
-
-
+            else
+                return null
+        }).then(data => {
+            if (data !== null) {
                 this.setState({
                     pharmacies: [{
                         value: data._id,
@@ -57,7 +87,14 @@ class Consult extends Component {
                     loading: false
                 });
                 console.log("state", this.state.pharmacies);
-            });
+            } else {
+                this.setState({ loading: false, alertMessage: "Error loading pharmacy." });
+                this.failAlert();
+            }
+        }).catch(error => {
+            this.setState({ loading: false, alertMessage: "Error loading pharmacy." });
+            this.failAlert();
+        });
 
 
     }
@@ -74,39 +111,39 @@ class Consult extends Component {
                     client_id: config.CLIENT_ID,
                     client_secret: config.CLIENT_SECRET
                 },
-            })
-                .then(results => {
-                    return results.json();
-                })
-                .then(data => {
-                    try {
-                        let rows = data.map((stock) => {
-                            console.log("Stock", stock);
-                            return [
-                                stock._id,
-                                stock.medicinePresentation.medicine,
-                                stock.medicinePresentation.form,
-                                stock.medicinePresentation.concentration,
-                                stock.medicinePresentation.packageQtt,
-                                stock.qttNeeded,
-                                stock.date,
-                                stock.period_day
-                            ];
-                        });
-                        console.log("DataRows", rows);
-                        var stocks = {
-                            headerRow: ["Id", "Medicine", "Form", "Concentration", "PackageQtt", "QttNeeded", "Date", "DayPeriod"],
-                            dataRows: rows
-                        };
-                        console.log("Data", data);
-                        console.log("stocks", stocks);
-                        this.setState({ dataTable: stocks, loading: false });
+            }).then(results => {
+                return results.json();
+            }).then(data => {
+                try {
+                    let rows = data.map((stock) => {
+                        console.log("Stock", stock);
+                        return [
+                            stock._id,
+                            stock.medicinePresentation.medicine,
+                            stock.medicinePresentation.form,
+                            stock.medicinePresentation.concentration,
+                            stock.medicinePresentation.packageQtt,
+                            stock.qttNeeded,
+                            stock.date,
+                            stock.period_day
+                        ];
+                    });
+                    console.log("DataRows", rows);
+                    var stocks = {
+                        headerRow: ["Id", "Medicine", "Form", "Concentration", "PackageQtt", "QttNeeded", "Date", "DayPeriod"],
+                        dataRows: rows
+                    };
+                    console.log("Data", data);
+                    console.log("stocks", stocks);
+                    this.setState({ dataTable: stocks, loading: false });
 
-                    } catch (err) {
-                        console.log("No logs");
-                    }
+                } catch (err) {
+                    console.log("No logs");
                 }
-                );
+            }).catch(error => {
+                this.setState({ loading: false, alertMessage: "Error loading order logs." });
+                this.failAlert();
+            });
         }
 
     }
@@ -121,6 +158,7 @@ class Consult extends Component {
         }
         return (
             <div className="main-content">
+                {this.state.alert}
                 <Grid fluid>
                     <Row>
                         <Col md={12}>

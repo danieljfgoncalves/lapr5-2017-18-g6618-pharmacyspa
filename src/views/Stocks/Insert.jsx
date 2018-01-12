@@ -39,7 +39,7 @@ class Insert extends Component {
         this.setState({
             alert: null
         });
-        setTimeout(window.location.reload(), 2000);
+        //setTimeout(window.location.reload(), 2000);
     }
     successAlert() {
         this.setState({
@@ -52,7 +52,7 @@ class Insert extends Component {
                     onCancel={() => this.hideAlert()}
                     confirmBtnBsStyle="info"
                 >
-                    This operation was successfull.
+                    {this.state.alertMessage}
                 </SweetAlert>
             )
         });
@@ -68,7 +68,7 @@ class Insert extends Component {
                     onCancel={() => this.hideAlert()}
                     confirmBtnBsStyle="info"
                 >
-                    This operation failed.
+                    {this.state.alertMessage}
                 </SweetAlert>
             )
         });
@@ -76,7 +76,8 @@ class Insert extends Component {
     handleSubmit(event) {
         event.preventDefault();
         console.log(event);
-        if (this.state.singleSelect == null || this.state.selectedPresentation == null || this.state.selectedMedicine == null || this.qtd.value == null) {
+        if (this.state.singleSelect === null || this.state.selectedPresentation === null || this.state.selectedMedicine === null || this.qtd === null) {
+            this.setState({ alertMessage: "All values must be filled." });
             this.failAlert();
         } else {
             this.setState({ loading: true });
@@ -108,12 +109,15 @@ class Insert extends Component {
                         this.setState({ loading: false });
                         this.successAlert();
                     } else {
-                        this.setState({ loading: false });
+                        this.setState({ loading: false, alertMessage: data.message });
                         this.failAlert();
                     }
                 } catch (err) {
-                    console.log("Error getting medicines", err);
+                    console.log("Error updating stock", err);
                 }
+            }).catch(error => {
+                this.setState({ loading1: false, alertMessage: "Error updating stock." });
+                this.failAlert();
             });
         }
     }
@@ -129,33 +133,29 @@ class Insert extends Component {
                 client_id: config.CLIENT_ID,
                 client_secret: config.CLIENT_SECRET
             },
-        })
-            .then(results => {
-                if (results.status !== 500)
-                    return results.json();
-                else
-                    return null;
-            })
-            .then(data => {
-                try {
-                    if (data.error == null) {
-                        this.setState({
-                            pharmacies: [{
-                                value: data._id,
-                                label: data.name
-                            }],
-                            loading1: false,
-                        });
-                        console.log("state", this.state.pharmacies);
-                    } else {
-                        this.setState({ loading1: false });
-                        this.failAlert();
-                    }
-                } catch (error) {
-                    this.setState({ loading1: false });
-                    this.failAlert();
-                }
-            });
+        }).then(results => {
+            if (results.status !== 500)
+                return results.json();
+            else
+                return null;
+        }).then(data => {
+            if (data !== null) {
+                this.setState({
+                    pharmacies: [{
+                        value: data._id,
+                        label: data.name
+                    }],
+                    loading1: false,
+                });
+                console.log("state", this.state.pharmacies);
+            } else {
+                this.setState({ loading1: false, alertMessage: "Error loading pharmacy." });
+                this.failAlert();
+            }
+        }).catch(error => {
+            this.setState({ loading1: false, alertMessage: "Error loading pharmacy." });
+            this.failAlert();
+        });
 
 
         fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/medicinePresentation', {
@@ -175,25 +175,23 @@ class Insert extends Component {
                     return null;
             })
             .then(data => {
-                try {
-                    if (data.error == null) {
-                        console.log("PRESENTATIONS", data);
-                        let presentations = data.map((presentation) => {
-                            return {
-                                value: presentation.id,
-                                label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
-                            }
-                        })
-                        console.log("Presentations", presentations);
-                        this.setState({ presentations: presentations, loading: false });
-                    } else {
-                        this.setState({ loading: false });
-                        this.failAlert();
-                    }
-                } catch (error) {
+                if (data !== null) {
+                    console.log("PRESENTATIONS", data);
+                    let presentations = data.map((presentation) => {
+                        return {
+                            value: presentation.id,
+                            label: presentation.drug.name + ", " + presentation.form + ", " + presentation.concentration + ", " + presentation.packageQuantity + " uni."
+                        }
+                    })
+                    console.log("Presentations", presentations);
+                    this.setState({ presentations: presentations, loading: false });
+                } else {
                     this.setState({ loading: false });
                     this.failAlert();
                 }
+            }).catch(error => {
+                this.setState({ loading: false, alertMessage: "Error loading presentations." });
+                this.failAlert();
             });
     }
     componentDidUpdate() {
@@ -232,6 +230,9 @@ class Insert extends Component {
                     } catch (err) {
                         console.log("Error getting medicines", err);
                     }
+                }).catch(error => {
+                    this.setState({ loading: false, alertMessage: "Error loading medicines." });
+                    this.failAlert();
                 });
         }
     }

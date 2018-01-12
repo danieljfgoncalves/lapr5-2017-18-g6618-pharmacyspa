@@ -33,22 +33,22 @@ export function getSalesInfo() {
             })
             .then(data => {
 
-                    let sales = data.map((sale) => {
+                let sales = data.map((sale) => {
 
-                        return [
-                            sale._id,
-                            sale.receiptId,
-                            sale.prescriptionId,
-                            sale.prescription.medicinePresentation.medicine,
-                            sale.prescription.medicinePresentation.form,
-                            sale.prescription.medicinePresentation.concentration,
-                            sale.prescription.medicinePresentation.packageQtt,
-                            sale.quantity,
-                            sale.date
-                        ];
-                    });
-                    resolve(sales);
-            })
+                    return [
+                        sale._id,
+                        sale.receiptId,
+                        sale.prescriptionId,
+                        sale.prescription.medicinePresentation.medicine,
+                        sale.prescription.medicinePresentation.form,
+                        sale.prescription.medicinePresentation.concentration,
+                        sale.prescription.medicinePresentation.packageQtt,
+                        sale.quantity,
+                        sale.date
+                    ];
+                });
+                resolve(sales);
+            }).catch(error => { })
     })
 }
 
@@ -58,7 +58,7 @@ export function getOrdersInfo() {
             resolve()
         }, 100000)
 
-        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' +  localStorage.pharmacy_id  + "/order", {
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id + "/order", {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -87,7 +87,7 @@ export function getOrdersInfo() {
                     ];
                 });
                 resolve(orders);
-            });
+            }).catch(error => { });
     })
 }
 export function getStockInfo() {
@@ -96,35 +96,35 @@ export function getStockInfo() {
             resolve()
         }, 100000)
 
-            fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: localStorage.getItem("token"),
-                    client_id: config.CLIENT_ID,
-                    client_secret: config.CLIENT_SECRET
-                },
+        fetch('https://lapr5-g6618-pharmacy-management.azurewebsites.net/api/pharmacy/' + localStorage.pharmacy_id, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: localStorage.getItem("token"),
+                client_id: config.CLIENT_ID,
+                client_secret: config.CLIENT_SECRET
+            },
+        })
+            .then(results => {
+                return results.json();
             })
-                .then(results => {
-                    return results.json();
-                })
-                .then(data => {
-                    let stocks = data.stocks.map((stock) => {
+            .then(data => {
+                let stocks = data.stocks.map((stock) => {
 
-                        return [
-                            stock._id,
-                            stock.medicinePresentation.medicine,
-                            stock.medicinePresentation.form,
-                            stock.medicinePresentation.concentration,
-                            stock.medicinePresentation.packageQtt,
-                            stock.minQuantity,
-                            stock.quantity
-                        ];
-                    });
-                    resolve(stocks);
+                    return [
+                        stock._id,
+                        stock.medicinePresentation.medicine,
+                        stock.medicinePresentation.form,
+                        stock.medicinePresentation.concentration,
+                        stock.medicinePresentation.packageQtt,
+                        stock.minQuantity,
+                        stock.quantity
+                    ];
+                });
+                resolve(stocks);
             }
-        );
+            ).catch(error => { resolve(null) });
     })
 }
 

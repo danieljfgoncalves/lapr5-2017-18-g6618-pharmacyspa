@@ -12,13 +12,14 @@ import NotificationSystem from 'react-notification-system';
 
 import Sidebar from 'components/Sidebar/Sidebar.jsx';
 import Header from 'components/Header/Header.jsx';
-//import Footer from 'components/Footer/Footer.jsx';
+import Footer from 'components/Footer/Footer.jsx';
 
 // dinamically create dashboard routes
 import dashRoutes from 'routes/dash.jsx';
 
 // style for notifications
 import { style } from "variables/Variables.jsx";
+import * as jwt_decode from 'jwt-decode';
 
 class Dash extends Component {
     constructor(props) {
@@ -28,14 +29,34 @@ class Dash extends Component {
             _notificationSystem: null
         };
     }
+    loggedIn() {
+        console.log("LocalStorage.token", localStorage.token);
+        if (!localStorage.token) {
+            return false;
+        } else {
+            let tokenDecoded = jwt_decode(localStorage.token);
+            console.log("token.exp", tokenDecoded.exp);
+            if (tokenDecoded.exp < new Date().getTime() / 1000) {
+                return false;
+            } else {
+                return localStorage.token;
+            }
+        }
+
+    }
+
+    requireAuth() {
+        if (!this.loggedIn()) {
+            this.props.history.push('/pages/login-page');
+        }
+    }
+
     componentDidMount() {
         this.setState({ _notificationSystem: this.refs.notificationSystem });
         if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
             Ps.initialize(this.refs.mainPanel, { wheelSpeed: 2, suppressScrollX: true });
         }
-        if (localStorage.getItem("token") == null) {
-            this.props.history.push('/pages/login-page')
-        }
+
     }
     // function that shows/hides notifications - it was put here, because the wrapper div has to be outside the main-panel class div
     handleNotificationClick(position) {
@@ -89,6 +110,7 @@ class Dash extends Component {
         if (document.documentElement.className.indexOf('nav-open') !== -1) {
             document.documentElement.classList.toggle('nav-open');
         }
+        this.requireAuth();
     }
     render() {
         return (
@@ -133,7 +155,7 @@ class Dash extends Component {
                             })
                         }
                     </Switch>
-                    {/*<Footer fluid/>*/}
+                    {<Footer fluid />}
                 </div>
             </div>
         );
