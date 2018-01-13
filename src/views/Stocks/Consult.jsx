@@ -122,70 +122,70 @@ class Consult extends Component {
                         stock.medicinePresentation.concentration,
                         stock.medicinePresentation.packageQtt,
                         stock.quantity,
-                        stock.date
+                        new Date(stock.date).toLocaleString()
                     ];
-                });
-                console.log("DataRows", rows);
-                var stocks = {
-                    headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
-                    dataRows: rows
-                };
-                console.log("Data", data);
-                console.log("stocks", stocks);
-                this.setState({ dataTable: stocks, loading: false });
-
-            }).catch(error => {
-                this.setState({ loading: false, alertMessage: "Error loading stock logs." });
-                this.failAlert();
             });
-        }
+            console.log("DataRows", rows);
+            var stocks = {
+                headerRow: ["id", "Medicine", "Form", "Concentration", "PackageQtt", "Qtt", "Date"],
+                dataRows: rows
+            };
+            console.log("Data", data);
+            console.log("stocks", stocks);
+            this.setState({ dataTable: stocks, loading: false });
 
+        }).catch (error => {
+            this.setState({ loading: false, alertMessage: "Error loading stock logs." });
+            this.failAlert();
+        });
     }
 
-    render() {
-        var table = null;
-        if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table id="datatables" title="Stock Logs" content={this.state.dataTable} />
-            console.log("Table", table);
-        } else {
-            table = <Spinner show={this.state.loading} />;
-        }
-        return (
-            <div className="main-content">
-                {this.state.alert}
-                <Grid fluid>
-                    <Row>
-                        <Col md={12}>
-                            <Card
-                                title={<legend>Check Stock Logs</legend>}
-                                content={
-                                    <Form horizontal>
-                                        <fieldset>
-                                            <FormGroup>
-                                                <ControlLabel className="col-sm-2">
-                                                    Pharmacy
+}
+
+render() {
+    var table = null;
+    if (this.state.dataTable.dataRows.length !== 0) {
+        table = <Table id="datatables" title="Stock Logs" content={this.state.dataTable} />
+        console.log("Table", table);
+    } else {
+        table = <Spinner show={this.state.loading} />;
+    }
+    return (
+        <div className="main-content">
+            {this.state.alert}
+            <Grid fluid>
+                <Row>
+                    <Col md={12}>
+                        <Card
+                            title={<legend>Check Stock Logs</legend>}
+                            content={
+                                <Form horizontal>
+                                    <fieldset>
+                                        <FormGroup>
+                                            <ControlLabel className="col-sm-2">
+                                                Pharmacy
                                                     </ControlLabel>
-                                                <Col md={4}>
-                                                    <Select
-                                                        placeholder="Select Pharmacy"
-                                                        name="singleSelect"
-                                                        value={this.state.singleSelect}
-                                                        options={this.state.pharmacies}
-                                                        onChange={(value) => this.setState({ singleSelect: value })}
-                                                    />
-                                                </Col>
-                                            </FormGroup>
-                                        </fieldset>
+                                            <Col md={4}>
+                                                <Select
+                                                    placeholder="Select Pharmacy"
+                                                    name="singleSelect"
+                                                    value={this.state.singleSelect}
+                                                    options={this.state.pharmacies}
+                                                    onChange={(value) => this.setState({ singleSelect: value })}
+                                                />
+                                            </Col>
+                                        </FormGroup>
+                                    </fieldset>
 
-                                    </Form>
-                                }
-                            />
-                        </Col>
-                        {table}
-                    </Row>
-                </Grid>
-            </div>
-        );
-    }
+                                </Form>
+                            }
+                        />
+                    </Col>
+                    {table}
+                </Row>
+            </Grid>
+        </div>
+    );
+}
 }
 export default Consult;

@@ -126,7 +126,7 @@ class Consult extends Component {
                             stock.prescription.medicinePresentation.concentration,
                             stock.prescription.medicinePresentation.packageQtt,
                             stock.quantity,
-                            stock.date
+                            new Date(stock.date).toLocaleString()
                         ];
                     });
                     console.log("DataRows", rows);

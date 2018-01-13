@@ -124,8 +124,8 @@ class Consult extends Component {
                             stock.medicinePresentation.concentration,
                             stock.medicinePresentation.packageQtt,
                             stock.qttNeeded,
-                            stock.date,
-                            stock.period_day
+                            new Date(stock.date).toLocaleString(),
+                            (stock.period_day ? "morning" : "afternoon")
                         ];
                     });
                     console.log("DataRows", rows);
