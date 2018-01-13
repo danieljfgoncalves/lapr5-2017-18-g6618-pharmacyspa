@@ -39,7 +39,9 @@ class Dash extends Component {
             if (tokenDecoded.exp < new Date().getTime() / 1000) {
                 return false;
             } else {
-                return localStorage.token;
+                if (tokenDecoded["https://lapr5.isep.pt/roles"].includes("pharmacist"))
+                    return localStorage.token;
+                else return false;
             }
         }
 
@@ -48,7 +50,8 @@ class Dash extends Component {
     requireAuth() {
         if (!this.loggedIn()) {
             this.props.history.push('/pages/login-page');
-        }
+            return false;
+        } else { return true; }
     }
 
     componentDidMount() {
@@ -110,7 +113,7 @@ class Dash extends Component {
         if (document.documentElement.className.indexOf('nav-open') !== -1) {
             document.documentElement.classList.toggle('nav-open');
         }
-        this.requireAuth();
+        this.setState({ loggedIn: this.requireAuth() })
     }
     render() {
         return (
@@ -120,7 +123,7 @@ class Dash extends Component {
                 <div className={"main-panel" + (this.props.location.pathname === "/maps/full-screen-maps" ? " main-panel-maps" : "")} ref="mainPanel">
                     <Header {...this.props} />
                     <Switch>
-                        {
+                        {this.state.loggedIn ?
                             dashRoutes.map((prop, key) => {
                                 if (prop.collapse) {
                                     return prop.views.map((prop, key) => {
@@ -152,7 +155,7 @@ class Dash extends Component {
                                             <Route path={prop.path} component={prop.component} key={key} />
                                         );
                                 }
-                            })
+                            }) : null
                         }
                     </Switch>
                     {<Footer fluid />}

@@ -20,7 +20,7 @@ class App extends Component {
                 {
                     appRoutes.map((prop, key) => {
                         return (
-                            <Route path={prop.path} component={prop.component} onEnter={prop.onEnter} key={key} />
+                            <Route path={prop.path} component={prop.component} key={key} />
                         );
                     })
                 }
