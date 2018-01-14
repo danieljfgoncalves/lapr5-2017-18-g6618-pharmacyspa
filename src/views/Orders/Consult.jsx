@@ -163,7 +163,7 @@ class Consult extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title={<legend>Check Pharmacy Logs</legend>}
+                                title={<legend>Order Requests</legend>}
                                 content={
                                     <Form horizontal>
                                         <fieldset>

@@ -147,7 +147,7 @@ class Insert extends Component {
     render() {
         var table = null;
         if (this.state.dataTable.dataRows.length !== 0) {
-            table = <Table id="datatables" title="Stocks" content={this.state.dataTable} />
+            table = <Table id="datatables" title="" content={this.state.dataTable} />
             console.log("Table", table);
         } else {
             table = <Spinner show={this.state.loading} />;
@@ -159,7 +159,7 @@ class Insert extends Component {
                     <Row>
                         <Col md={12}>
                             <Card
-                                title={<legend>Check Pharmacy Stocks</legend>}
+                                title={<legend>Stocks Quantities</legend>}
                                 content={
                                     <Form horizontal>
                                         <fieldset>
